@@ -1,99 +1,298 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Climap Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<div align="center">
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-## Description
+**A robust RESTful API for healthcare facility management**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Features](#features) • [Installation](#installation) • [API Documentation](#api-endpoints) • [Contributing](#contributing)
 
-## Project setup
+</div>
 
+---
+
+## 🚀 Overview
+
+Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive healthcare facility management. Built with **Prisma ORM** and **PostgreSQL**, it provides secure, scalable access to facility data with user submission workflows, advanced filtering capabilities, and efficient cursor-based pagination.
+
+### 🎯 Key Highlights
+
+- **User-Friendly Submissions**: Healthcare facilities submitted by users are marked as pending for administrative verification
+- **Advanced Filtering**: Filter facilities by state, LGA, facility type, and ownership
+- **Efficient Pagination**: Cursor-based pagination for optimal performance with large datasets
+- **Secure Authentication**: JWT-based authentication protecting administrative routes
+- **Input Validation**: Comprehensive validation using DTOs with `class-validator`
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 🏥 **Facility Management** | Complete CRUD operations for healthcare facilities |
+| 📝 **User Submissions** | User-submitted facilities with pending verification workflow |
+| 🔍 **Advanced Filtering** | Filter by state, LGA, facility type, and ownership |
+| 📄 **Cursor Pagination** | Efficient data retrieval for large datasets |
+| ✅ **Input Validation** | Robust validation using DTOs and `class-validator` |
+| 🗄️ **Database Integration** | PostgreSQL with Prisma ORM for type-safe database access |
+| 🔐 **JWT Authentication** | Secure authentication for protected administrative routes |
+
+---
+
+## 🛠️ Technology Stack
+
+<table>
+<tr>
+<td>
+
+**Backend Framework**
+- [NestJS](https://nestjs.com/) - Scalable Node.js framework
+- [TypeScript](https://www.typescriptlang.org/) - Type-safe JavaScript
+
+</td>
+<td>
+
+**Database & ORM**
+- [PostgreSQL](https://www.postgresql.org/) - Robust relational database
+- [Prisma ORM](https://www.prisma.io/) - Next-generation TypeScript ORM
+
+</td>
+</tr>
+<tr>
+<td>
+
+**Validation & Security**
+- [class-validator](https://github.com/typestack/class-validator) - Decorator-based validation
+- [JWT](https://jwt.io/) - JSON Web Token authentication
+
+</td>
+<td>
+
+**Development Tools**
+- [class-transformer](https://github.com/typestack/class-transformer) - Object transformation
+- [ESLint](https://eslint.org/) - Code linting and formatting
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+
+- **Node.js** (v16 or higher)
+- **npm** or **yarn**
+- **PostgreSQL** (v12 or higher)
+
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/climap-backend.git
+   cd climap-backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Configuration**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   # Database Configuration
+   DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+   
+   # JWT Configuration
+   JWT_SECRET=your_super_secret_jwt_key_here
+   
+   # Application Configuration
+   PORT=3000
+   NODE_ENV=development
+   ```
+
+4. **Database Setup**
+   ```bash
+   # Run database migrations
+   npx prisma migrate dev
+   
+   # Generate Prisma client
+   npx prisma generate
+   ```
+
+5. **Start the application**
+   ```bash
+   # Development mode
+   npm run start:dev
+   
+   # Production mode
+   npm run build && npm run start:prod
+   ```
+
+🎉 **Your API is now running at** `http://localhost:3000`
+
+---
+
+## 📚 API Endpoints
+
+### 🏥 Facilities
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/facilities/add` | Submit a new facility (pending status) | ❌ |
+| `GET` | `/facilities` | Get facilities with filters & pagination | ❌ |
+| `GET` | `/facilities/:id` | Get facility details | ❌ |
+| `PATCH` | `/facilities/:id` | Update facility details | ✅ |
+| `PATCH` | `/facilities/:id/approve` | Approve pending facility | ✅ Admin |
+| `DELETE` | `/facilities/:id` | Delete facility | ✅ Admin |
+
+### 🔍 Query Parameters for `/facilities`
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `state` | string | Filter by state | `?state=Lagos` |
+| `lga` | string | Filter by Local Government Area | `?lga=Ikeja` |
+| `facilityType` | string | Filter by facility type | `?facilityType=Hospital` |
+| `ownership` | string | Filter by ownership type | `?ownership=Private` |
+| `next` | string | Cursor for pagination | `?next=eyJpZCI6IjEyMyJ9` |
+| `pageSize` | number | Number of results per page (max: 50) | `?pageSize=20` |
+
+### 📝 Example Requests
+
+**Get facilities with filters:**
 ```bash
-$ npm install
+curl -X GET "http://localhost:3000/facilities?state=Lagos&facilityType=Hospital&pageSize=10"
 ```
 
-## Compile and run the project
-
+**Submit a new facility:**
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+curl -X POST "http://localhost:3000/facilities/add" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Lagos General Hospital",
+    "state": "Lagos",
+    "lga": "Lagos Island",
+    "facilityType": "Hospital",
+    "ownership": "Public"
+  }'
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## 🔄 Data Flow
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```mermaid
+graph LR
+    A[User Submits Facility] --> B[Status: Pending]
+    B --> C[Admin Review]
+    C --> D[Status: Verified]
+    D --> E[Visible to All Users]
+    
+    F[API Request] --> G[Apply Filters]
+    G --> H[Cursor Pagination]
+    H --> I[Return Results]
 ```
 
-## Deployment
+1. **User Submission**: Users submit healthcare facilities → automatically marked as `Pending`
+2. **Admin Verification**: Administrators review and approve → status updated to `Verified`
+3. **Public Access**: Verified facilities become visible through public API endpoints
+4. **Efficient Retrieval**: Advanced filtering and cursor-based pagination for optimal performance
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🧪 Testing
+
+### Using Postman
+
+1. **Import Collection**: Import the API endpoints into Postman
+2. **Environment Variables**: Set up environment with `baseUrl = http://localhost:3000`
+3. **Test Authentication**: For protected routes, include JWT token in headers
+
+### Example Test Requests
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Get all facilities
+GET {{baseUrl}}/facilities
+
+# Get facilities with filters
+GET {{baseUrl}}/facilities?state=Lagos&facilityType=Hospital&pageSize=10
+
+# Paginated request (use 'next' from previous response)
+GET {{baseUrl}}/facilities?next=eyJpZCI6IjEyMyJ9&pageSize=10
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 🤝 Contributing
 
-Check out a few resources that may come in handy when working with NestJS:
+We welcome contributions! Here's how you can help:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Development Workflow
 
-## Support
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** your changes: `git commit -m 'Add amazing feature'`
+4. **Push** to the branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Code Standards
 
-## Stay in touch
+- Follow **TypeScript** best practices
+- Use **ESLint** configuration provided
+- Write **descriptive commit messages**
+- Add **tests** for new features
+- Update **documentation** as needed
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Development Setup
 
-## License
+```bash
+# Install dependencies
+npm install
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# climap-backend
+# Run in development mode with hot reload
+npm run start:dev
+
+# Run tests
+npm run test
+
+# Lint code
+npm run lint
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 Contact & Support
+
+<div align="center">
+
+**Need help or have questions?**
+
+[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?style=for-the-badge&logo=github)](https://github.com/yourusername/climap-backend/issues)
+[![Email](https://img.shields.io/badge/Email-Contact-blue?style=for-the-badge&logo=gmail)](mailto:your-email@example.com)
+
+**Maintainer:** [Your Name](https://github.com/yourusername)
+
+</div>
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if you find it helpful!**
+
+Made with ❤️ for the healthcare community
+
+</div>
