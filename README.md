@@ -17,14 +17,13 @@
 
 ## 🚀 Overview
 
-Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive healthcare facility management. Built with **Prisma ORM** and **PostgreSQL**, it provides secure, scalable access to facility data with user submission workflows, advanced filtering capabilities, and efficient cursor-based pagination.
+Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data. Built with **Prisma ORM**, **PostgreSQL**, and **PostGIS**, it provides authentication, facility listing/filtering, cursor pagination, and location-ready facility records.
 
 ### 🎯 Key Highlights
 
-- **User-Friendly Submissions**: Healthcare facilities submitted by users are marked as pending for administrative verification
 - **Advanced Filtering**: Filter facilities by state, LGA, facility type, and ownership
 - **Efficient Pagination**: Cursor-based pagination for optimal performance with large datasets
-- **Secure Authentication**: JWT-based authentication protecting administrative routes
+- **Secure Authentication**: JWT-based registration and login
 - **Input Validation**: Comprehensive validation using DTOs with `class-validator`
 
 ---
@@ -33,13 +32,12 @@ Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive he
 
 | Feature | Description |
 |---------|-------------|
-| 🏥 **Facility Management** | Complete CRUD operations for healthcare facilities |
-| 📝 **User Submissions** | User-submitted facilities with pending verification workflow |
+| 🏥 **Facility Management** | Create, list, read, update, and delete healthcare facilities |
 | 🔍 **Advanced Filtering** | Filter by state, LGA, facility type, and ownership |
 | 📄 **Cursor Pagination** | Efficient data retrieval for large datasets |
 | ✅ **Input Validation** | Robust validation using DTOs and `class-validator` |
-| 🗄️ **Database Integration** | PostgreSQL with Prisma ORM for type-safe database access |
-| 🔐 **JWT Authentication** | Secure authentication for protected administrative routes |
+| 🗄️ **Database Integration** | PostgreSQL/PostGIS with Prisma ORM |
+| 🔐 **JWT Authentication** | Registration and login with JWT access tokens |
 
 ---
 
@@ -58,6 +56,7 @@ Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive he
 
 **Database & ORM**
 - [PostgreSQL](https://www.postgresql.org/) - Robust relational database
+- [PostGIS](https://postgis.net/) - Geospatial queries and indexing
 - [Prisma ORM](https://www.prisma.io/) - Next-generation TypeScript ORM
 
 </td>
@@ -136,7 +135,7 @@ Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive he
    npm run build && npm run start:prod
    ```
 
-🎉 **Your API is now running at** `http://localhost:3000`
+🎉 **Your API is now running at** `http://localhost:3000/api/v1`
 
 ---
 
@@ -146,12 +145,18 @@ Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive he
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `POST` | `/facilities/add` | Submit a new facility (pending status) | ❌ |
-| `GET` | `/facilities` | Get facilities with filters & pagination | ❌ |
-| `GET` | `/facilities/:id` | Get facility details | ❌ |
-| `PATCH` | `/facilities/:id` | Update facility details | ✅ |
-| `PATCH` | `/facilities/:id/approve` | Approve pending facility | ✅ Admin |
-| `DELETE` | `/facilities/:id` | Delete facility | ✅ Admin |
+| `POST` | `/api/v1/facilities/add` | Create a new facility | ❌ |
+| `GET` | `/api/v1/facilities` | Get facilities with filters and pagination | ❌ |
+| `GET` | `/api/v1/facilities/:id` | Get facility details | ❌ |
+| `PATCH` | `/api/v1/facilities/:id` | Update facility details | ❌ |
+| `DELETE` | `/api/v1/facilities/:id` | Delete facility | ❌ |
+
+### 🔐 Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/auth/register` | Register a user |
+| `POST` | `/api/v1/auth/login` | Login and receive an access token |
 
 ### 🔍 Query Parameters for `/facilities`
 
@@ -168,19 +173,20 @@ Climap Backend is a **NestJS-powered RESTful API** designed for comprehensive he
 
 **Get facilities with filters:**
 ```bash
-curl -X GET "http://localhost:3000/facilities?state=Lagos&facilityType=Hospital&pageSize=10"
+curl -X GET "http://localhost:3000/api/v1/facilities?state=Lagos&facilityType=Hospital&pageSize=10"
 ```
 
 **Submit a new facility:**
 ```bash
-curl -X POST "http://localhost:3000/facilities/add" \
+curl -X POST "http://localhost:3000/api/v1/facilities/add" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Lagos General Hospital",
+    "facilityName": "Lagos General Hospital",
     "state": "Lagos",
     "lga": "Lagos Island",
     "facilityType": "Hospital",
-    "ownership": "Public"
+    "ownership": "Public",
+    "servicesOffered": []
   }'
 ```
 
@@ -190,20 +196,20 @@ curl -X POST "http://localhost:3000/facilities/add" \
 
 ```mermaid
 graph LR
-    A[User Submits Facility] --> B[Status: Pending]
-    B --> C[Admin Review]
-    C --> D[Status: Verified]
-    D --> E[Visible to All Users]
+    A[Facility Data] --> B[API Request]
+    B --> C[Validation]
+    C --> D[Prisma]
+    D --> E[PostgreSQL/PostGIS]
     
     F[API Request] --> G[Apply Filters]
     G --> H[Cursor Pagination]
     H --> I[Return Results]
 ```
 
-1. **User Submission**: Users submit healthcare facilities → automatically marked as `Pending`
-2. **Admin Verification**: Administrators review and approve → status updated to `Verified`
-3. **Public Access**: Verified facilities become visible through public API endpoints
-4. **Efficient Retrieval**: Advanced filtering and cursor-based pagination for optimal performance
+1. **API Request**: Clients create or query facility records.
+2. **Validation**: DTOs validate incoming request bodies.
+3. **Database Access**: Prisma reads and writes PostgreSQL records.
+4. **Location Support**: PostGIS stores facility points for geospatial querying.
 
 ---
 
@@ -213,19 +219,19 @@ graph LR
 
 1. **Import Collection**: Import the API endpoints into Postman
 2. **Environment Variables**: Set up environment with `baseUrl = http://localhost:3000`
-3. **Test Authentication**: For protected routes, include JWT token in headers
+3. **Test Authentication**: Use `/api/v1/auth/login` to receive a JWT access token
 
 ### Example Test Requests
 
 ```bash
 # Get all facilities
-GET {{baseUrl}}/facilities
+GET {{baseUrl}}/api/v1/facilities
 
 # Get facilities with filters
-GET {{baseUrl}}/facilities?state=Lagos&facilityType=Hospital&pageSize=10
+GET {{baseUrl}}/api/v1/facilities?state=Lagos&facilityType=Hospital&pageSize=10
 
 # Paginated request (use 'next' from previous response)
-GET {{baseUrl}}/facilities?next=eyJpZCI6IjEyMyJ9&pageSize=10
+GET {{baseUrl}}/api/v1/facilities?next=FACILITY_ID&pageSize=10
 ```
 
 ---

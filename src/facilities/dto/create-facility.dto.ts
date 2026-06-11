@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, IsArray, IsDate, IsEmail, IsUrl } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsArray,
+  IsDate,
+  IsEmail,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateFacilityDto {
   @IsOptional()
@@ -33,10 +41,6 @@ export class CreateFacilityDto {
   @IsOptional()
   @IsNumber()
   longitude?: number;
-
-  @IsOptional()
-  @IsBoolean()
-  hasCoordinates?: boolean;
 
   @IsOptional()
   @IsString()

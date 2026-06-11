@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class FacilitiesService {
@@ -10,7 +11,7 @@ export class FacilitiesService {
 
   async create(createFacilityDto: CreateFacilityDto) {
     const data = {
-      facilityId: `FAC-${uuidv4()}`,
+      facilityId: `FAC-${randomUUID()}`,
       facilityName: createFacilityDto.facilityName,
       facilityType: createFacilityDto.facilityType,
       facilityLevel: createFacilityDto.facilityLevel,
@@ -19,7 +20,6 @@ export class FacilitiesService {
       ward: createFacilityDto.ward,
       latitude: createFacilityDto.latitude,
       longitude: createFacilityDto.longitude,
-      hasCoordinates: createFacilityDto.hasCoordinates ?? false,
       address: createFacilityDto.address,
       phone: createFacilityDto.phone,
       email: createFacilityDto.email,
@@ -36,8 +36,16 @@ export class FacilitiesService {
     return facility;
   }
 
-  async findAll(filters: any, next?: string, pageSize = 10) {
-    const query: any = { where: filters, take: pageSize };
+  async findAll(
+    filters: Prisma.FacilityWhereInput,
+    next?: string,
+    pageSize?: string,
+  ) {
+    const take = Math.min(Math.max(Number(pageSize) || 10, 1), 50);
+    const where = Object.fromEntries(
+      Object.entries(filters).filter(([, value]) => value !== undefined),
+    ) as Prisma.FacilityWhereInput;
+    const query: Prisma.FacilityFindManyArgs = { where, take };
 
     if (next) {
       query.cursor = { id: next };
@@ -52,15 +60,32 @@ export class FacilitiesService {
     return { facilities, next: newNext, count: facilities.length };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} facility`;
+  async findOne(id: string) {
+    const facility = await this.prisma.facility.findUnique({
+      where: { id },
+    });
+
+    if (!facility) {
+      throw new NotFoundException('Facility not found');
+    }
+
+    return facility;
   }
 
-  update(id: number, updateFacilityDto: UpdateFacilityDto) {
-    return `This action updates a #${id} facility`;
+  async update(id: string, updateFacilityDto: UpdateFacilityDto) {
+    await this.findOne(id);
+
+    return this.prisma.facility.update({
+      where: { id },
+      data: updateFacilityDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} facility`;
+  async remove(id: string) {
+    await this.findOne(id);
+
+    return this.prisma.facility.delete({
+      where: { id },
+    });
   }
 }

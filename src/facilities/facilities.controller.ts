@@ -27,14 +27,16 @@ export class FacilitiesController {
     @Query('lga') lga?: string,
     @Query('facilityType') facilityType?: string,
     @Query('ownership') ownership?: string,
+    @Query('next') next?: string,
+    @Query('pageSize') pageSize?: string,
   ) {
     const filters = { state, lga, facilityType, ownership };
-    return this.facilitiesService.findAll(filters);
+    return this.facilitiesService.findAll(filters, next, pageSize);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.facilitiesService.findOne(+id);
+    return this.facilitiesService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,11 +44,11 @@ export class FacilitiesController {
     @Param('id') id: string,
     @Body() updateFacilityDto: UpdateFacilityDto,
   ) {
-    return this.facilitiesService.update(+id, updateFacilityDto);
+    return this.facilitiesService.update(id, updateFacilityDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.facilitiesService.remove(+id);
+    return this.facilitiesService.remove(id);
   }
 }

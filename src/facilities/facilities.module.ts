@@ -4,7 +4,7 @@ import { FacilitiesController } from './facilities.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [FacilitiesController],
   providers: [FacilitiesService],
 })
