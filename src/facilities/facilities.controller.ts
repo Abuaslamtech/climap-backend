@@ -11,6 +11,7 @@ import {
 import { FacilitiesService } from './facilities.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
+import { NearbyFacilitiesQueryDto } from './dto/nearby-facilities-query.dto';
 
 @Controller('facilities')
 export class FacilitiesController {
@@ -32,6 +33,11 @@ export class FacilitiesController {
   ) {
     const filters = { state, lga, facilityType, ownership };
     return this.facilitiesService.findAll(filters, next, pageSize);
+  }
+
+  @Get('nearby')
+  findNearby(@Query() query: NearbyFacilitiesQueryDto) {
+    return this.facilitiesService.findNearby(query);
   }
 
   @Get(':id')

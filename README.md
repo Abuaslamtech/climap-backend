@@ -30,14 +30,14 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| 🏥 **Facility Management** | Create, list, read, update, and delete healthcare facilities |
-| 🔍 **Advanced Filtering** | Filter by state, LGA, facility type, and ownership |
-| 📄 **Cursor Pagination** | Efficient data retrieval for large datasets |
-| ✅ **Input Validation** | Robust validation using DTOs and `class-validator` |
-| 🗄️ **Database Integration** | PostgreSQL/PostGIS with Prisma ORM |
-| 🔐 **JWT Authentication** | Registration and login with JWT access tokens |
+| Feature                     | Description                                                  |
+| --------------------------- | ------------------------------------------------------------ |
+| 🏥 **Facility Management**  | Create, list, read, update, and delete healthcare facilities |
+| 🔍 **Advanced Filtering**   | Filter by state, LGA, facility type, and ownership           |
+| 📄 **Cursor Pagination**    | Efficient data retrieval for large datasets                  |
+| ✅ **Input Validation**     | Robust validation using DTOs and `class-validator`           |
+| 🗄️ **Database Integration** | PostgreSQL/PostGIS with Prisma ORM                           |
+| 🔐 **JWT Authentication**   | Registration and login with JWT access tokens                |
 
 ---
 
@@ -48,6 +48,7 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 <td>
 
 **Backend Framework**
+
 - [NestJS](https://nestjs.com/) - Scalable Node.js framework
 - [TypeScript](https://www.typescriptlang.org/) - Type-safe JavaScript
 
@@ -55,6 +56,7 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 <td>
 
 **Database & ORM**
+
 - [PostgreSQL](https://www.postgresql.org/) - Robust relational database
 - [PostGIS](https://postgis.net/) - Geospatial queries and indexing
 - [Prisma ORM](https://www.prisma.io/) - Next-generation TypeScript ORM
@@ -65,6 +67,7 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 <td>
 
 **Validation & Security**
+
 - [class-validator](https://github.com/typestack/class-validator) - Decorator-based validation
 - [JWT](https://jwt.io/) - JSON Web Token authentication
 
@@ -72,6 +75,7 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 <td>
 
 **Development Tools**
+
 - [class-transformer](https://github.com/typestack/class-transformer) - Object transformation
 - [ESLint](https://eslint.org/) - Code linting and formatting
 
@@ -92,45 +96,50 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 ### Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/climap-backend.git
    cd climap-backend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Configuration**
-   
+
    Create a `.env` file in the root directory:
+
    ```env
    # Database Configuration
    DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-   
+
    # JWT Configuration
    JWT_SECRET=your_super_secret_jwt_key_here
-   
+
    # Application Configuration
    PORT=3000
    NODE_ENV=development
    ```
 
 4. **Database Setup**
+
    ```bash
    # Run database migrations
    npx prisma migrate dev
-   
+
    # Generate Prisma client
    npx prisma generate
    ```
 
 5. **Start the application**
+
    ```bash
    # Development mode
    npm run start:dev
-   
+
    # Production mode
    npm run build && npm run start:prod
    ```
@@ -143,40 +152,62 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 
 ### 🏥 Facilities
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/api/v1/facilities/add` | Create a new facility | ❌ |
-| `GET` | `/api/v1/facilities` | Get facilities with filters and pagination | ❌ |
-| `GET` | `/api/v1/facilities/:id` | Get facility details | ❌ |
-| `PATCH` | `/api/v1/facilities/:id` | Update facility details | ❌ |
-| `DELETE` | `/api/v1/facilities/:id` | Delete facility | ❌ |
+| Method   | Endpoint                    | Description                                | Auth Required |
+| -------- | --------------------------- | ------------------------------------------ | ------------- |
+| `POST`   | `/api/v1/facilities/add`    | Create a new facility                      | ❌            |
+| `GET`    | `/api/v1/facilities`        | Get facilities with filters and pagination | ❌            |
+| `GET`    | `/api/v1/facilities/nearby` | Get facilities near user coordinates       | ❌            |
+| `GET`    | `/api/v1/facilities/:id`    | Get facility details                       | ❌            |
+| `PATCH`  | `/api/v1/facilities/:id`    | Update facility details                    | ❌            |
+| `DELETE` | `/api/v1/facilities/:id`    | Delete facility                            | ❌            |
 
 ### 🔐 Auth
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/auth/register` | Register a user |
-| `POST` | `/api/v1/auth/login` | Login and receive an access token |
+| Method | Endpoint                | Description                       |
+| ------ | ----------------------- | --------------------------------- |
+| `POST` | `/api/v1/auth/register` | Register a user                   |
+| `POST` | `/api/v1/auth/login`    | Login and receive an access token |
 
 ### 🔍 Query Parameters for `/facilities`
 
-| Parameter | Type | Description | Example |
-|-----------|------|-------------|---------|
-| `state` | string | Filter by state | `?state=Lagos` |
-| `lga` | string | Filter by Local Government Area | `?lga=Ikeja` |
-| `facilityType` | string | Filter by facility type | `?facilityType=Hospital` |
-| `ownership` | string | Filter by ownership type | `?ownership=Private` |
-| `next` | string | Cursor for pagination | `?next=eyJpZCI6IjEyMyJ9` |
-| `pageSize` | number | Number of results per page (max: 50) | `?pageSize=20` |
+| Parameter      | Type   | Description                          | Example                  |
+| -------------- | ------ | ------------------------------------ | ------------------------ |
+| `state`        | string | Filter by state                      | `?state=Lagos`           |
+| `lga`          | string | Filter by Local Government Area      | `?lga=Ikeja`             |
+| `facilityType` | string | Filter by facility type              | `?facilityType=Hospital` |
+| `ownership`    | string | Filter by ownership type             | `?ownership=Private`     |
+| `next`         | string | Cursor for pagination                | `?next=eyJpZCI6IjEyMyJ9` |
+| `pageSize`     | number | Number of results per page (max: 50) | `?pageSize=20`           |
+
+### 📍 Query Parameters for `/facilities/nearby`
+
+| Parameter      | Type   | Description                                      | Example                  |
+| -------------- | ------ | ------------------------------------------------ | ------------------------ |
+| `latitude`     | number | User latitude, from -90 to 90                    | `?latitude=6.5244`       |
+| `longitude`    | number | User longitude, from -180 to 180                 | `?longitude=3.3792`      |
+| `radiusKm`     | number | Search radius in kilometers, default 10, max 100 | `?radiusKm=10`           |
+| `pageSize`     | number | Number of nearest results, default 10, max 50    | `?pageSize=20`           |
+| `facilityType` | string | Optional facility type filter                    | `?facilityType=Hospital` |
+| `ownership`    | string | Optional ownership filter                        | `?ownership=Public`      |
+| `state`        | string | Optional state filter                            | `?state=Lagos`           |
+| `lga`          | string | Optional LGA filter                              | `?lga=Ikeja`             |
 
 ### 📝 Example Requests
 
 **Get facilities with filters:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/v1/facilities?state=Lagos&facilityType=Hospital&pageSize=10"
 ```
 
+**Get nearby facilities:**
+
+```bash
+curl -X GET "http://localhost:3000/api/v1/facilities/nearby?latitude=6.5244&longitude=3.3792&radiusKm=10&pageSize=20"
+```
+
 **Submit a new facility:**
+
 ```bash
 curl -X POST "http://localhost:3000/api/v1/facilities/add" \
   -H "Content-Type: application/json" \
@@ -200,7 +231,7 @@ graph LR
     B --> C[Validation]
     C --> D[Prisma]
     D --> E[PostgreSQL/PostGIS]
-    
+
     F[API Request] --> G[Apply Filters]
     G --> H[Cursor Pagination]
     H --> I[Return Results]
@@ -210,6 +241,7 @@ graph LR
 2. **Validation**: DTOs validate incoming request bodies.
 3. **Database Access**: Prisma reads and writes PostgreSQL records.
 4. **Location Support**: PostGIS stores facility points for geospatial querying.
+5. **Nearby Search**: PostGIS filters facilities by radius and sorts results by distance.
 
 ---
 
@@ -229,6 +261,9 @@ GET {{baseUrl}}/api/v1/facilities
 
 # Get facilities with filters
 GET {{baseUrl}}/api/v1/facilities?state=Lagos&facilityType=Hospital&pageSize=10
+
+# Get facilities near user coordinates
+GET {{baseUrl}}/api/v1/facilities/nearby?latitude=6.5244&longitude=3.3792&radiusKm=10&pageSize=20
 
 # Paginated request (use 'next' from previous response)
 GET {{baseUrl}}/api/v1/facilities?next=FACILITY_ID&pageSize=10
