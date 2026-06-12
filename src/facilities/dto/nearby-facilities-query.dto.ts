@@ -17,6 +17,10 @@ export class NearbyFacilitiesQueryDto {
 
   @IsOptional()
   @IsString()
+  next?: string;
+
+  @IsOptional()
+  @IsString()
   facilityType?: string;
 
   @IsOptional()

@@ -38,6 +38,12 @@ type NearbyFacilityRow = {
   distanceKm: number;
 };
 
+type NearbyCursor = {
+  distanceKm: number;
+  facilityName: string;
+  id: string;
+};
+
 @Injectable()
 export class FacilitiesService {
   private readonly defaultNearbyRadiusKm = 10;
@@ -126,6 +132,11 @@ export class FacilitiesService {
       this.defaultPageSize,
     );
     const radiusMeters = radiusKm * 1000;
+    const cursor = query.next ? this.decodeNearbyCursor(query.next) : null;
+    const distanceKmExpression = Prisma.sql`ST_Distance(
+      "location"::geography,
+      ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography
+    ) / 1000`;
 
     const filters = [
       Prisma.sql`"location" IS NOT NULL`,
@@ -150,6 +161,21 @@ export class FacilitiesService {
 
     if (query.lga) {
       filters.push(Prisma.sql`"lga" = ${query.lga}`);
+    }
+
+    if (cursor) {
+      filters.push(Prisma.sql`(
+        ${distanceKmExpression} > ${cursor.distanceKm}
+        OR (
+          ${distanceKmExpression} = ${cursor.distanceKm}
+          AND "facilityName" > ${cursor.facilityName}
+        )
+        OR (
+          ${distanceKmExpression} = ${cursor.distanceKm}
+          AND "facilityName" = ${cursor.facilityName}
+          AND "id" > ${cursor.id}
+        )
+      )`);
     }
 
     const facilities = await this.prisma.$queryRaw<NearbyFacilityRow[]>`
@@ -178,22 +204,25 @@ export class FacilitiesService {
         "verificationStatus",
         "createdAt",
         "updatedAt",
-        ST_Distance(
-          "location"::geography,
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography
-        ) / 1000 AS "distanceKm"
+        ${distanceKmExpression} AS "distanceKm"
       FROM "Facility"
       WHERE ${Prisma.join(filters, ' AND ')}
-      ORDER BY "distanceKm" ASC, "facilityName" ASC
-      LIMIT ${pageSize}
+      ORDER BY "distanceKm" ASC, "facilityName" ASC, "id" ASC
+      LIMIT ${pageSize + 1}
     `;
+    const page = facilities.slice(0, pageSize);
+    const next =
+      facilities.length > pageSize && page.length > 0
+        ? this.encodeNearbyCursor(page[page.length - 1])
+        : null;
 
     return {
-      facilities: facilities.map((facility) => ({
+      facilities: page.map((facility) => ({
         ...facility,
         distanceKm: Number(facility.distanceKm),
       })),
-      count: facilities.length,
+      next,
+      count: page.length,
       radiusKm,
     };
   }
@@ -273,5 +302,41 @@ export class FacilitiesService {
     }
 
     return parsed;
+  }
+
+  private encodeNearbyCursor(facility: NearbyFacilityRow) {
+    const cursor: NearbyCursor = {
+      distanceKm: Number(facility.distanceKm),
+      facilityName: facility.facilityName,
+      id: facility.id,
+    };
+
+    return Buffer.from(JSON.stringify(cursor)).toString('base64url');
+  }
+
+  private decodeNearbyCursor(next: string): NearbyCursor {
+    try {
+      const cursor = JSON.parse(
+        Buffer.from(next, 'base64url').toString('utf8'),
+      ) as Partial<NearbyCursor>;
+
+      if (
+        !cursor ||
+        typeof cursor.distanceKm !== 'number' ||
+        !Number.isFinite(cursor.distanceKm) ||
+        typeof cursor.facilityName !== 'string' ||
+        typeof cursor.id !== 'string'
+      ) {
+        throw new Error('Invalid nearby cursor');
+      }
+
+      return {
+        distanceKm: cursor.distanceKm,
+        facilityName: cursor.facilityName,
+        id: cursor.id,
+      };
+    } catch {
+      throw new BadRequestException('next cursor is invalid');
+    }
   }
 }

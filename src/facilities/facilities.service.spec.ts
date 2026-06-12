@@ -45,36 +45,37 @@ describe('FacilitiesService', () => {
   });
 
   describe('findNearby', () => {
+    const nearbyFacility = (overrides: Record<string, unknown> = {}) => ({
+      id: 'facility-1',
+      facilityId: 'FAC-1',
+      facilityName: 'Lagos General Hospital',
+      facilityType: 'Hospital',
+      facilityLevel: 'Secondary',
+      state: 'Lagos',
+      lga: 'Lagos Island',
+      ward: null,
+      latitude: 6.45,
+      longitude: 3.39,
+      address: null,
+      phone: null,
+      email: null,
+      website: null,
+      ceoName: null,
+      servicesOffered: [],
+      ownership: 'Public',
+      claimedBy: null,
+      dataSource: null,
+      lastVerified: null,
+      accessibilityScore: null,
+      verificationStatus: null,
+      createdAt: new Date('2026-06-11T00:00:00.000Z'),
+      updatedAt: new Date('2026-06-11T00:00:00.000Z'),
+      distanceKm: '2.41',
+      ...overrides,
+    });
+
     it('returns facilities ordered by PostGIS distance', async () => {
-      prisma.$queryRaw.mockResolvedValue([
-        {
-          id: 'facility-1',
-          facilityId: 'FAC-1',
-          facilityName: 'Lagos General Hospital',
-          facilityType: 'Hospital',
-          facilityLevel: 'Secondary',
-          state: 'Lagos',
-          lga: 'Lagos Island',
-          ward: null,
-          latitude: 6.45,
-          longitude: 3.39,
-          address: null,
-          phone: null,
-          email: null,
-          website: null,
-          ceoName: null,
-          servicesOffered: [],
-          ownership: 'Public',
-          claimedBy: null,
-          dataSource: null,
-          lastVerified: null,
-          accessibilityScore: null,
-          verificationStatus: null,
-          createdAt: new Date('2026-06-11T00:00:00.000Z'),
-          updatedAt: new Date('2026-06-11T00:00:00.000Z'),
-          distanceKm: '2.41',
-        },
-      ]);
+      prisma.$queryRaw.mockResolvedValue([nearbyFacility()]);
 
       const result = await service.findNearby({
         latitude: '6.5244',
@@ -94,6 +95,7 @@ describe('FacilitiesService', () => {
             distanceKm: 2.41,
           }),
         ],
+        next: null,
         count: 1,
         radiusKm: 10,
       });
@@ -109,9 +111,52 @@ describe('FacilitiesService', () => {
 
       expect(result).toEqual({
         facilities: [],
+        next: null,
         count: 0,
         radiusKm: 10,
       });
+    });
+
+    it('returns a next cursor when more nearby facilities are available', async () => {
+      prisma.$queryRaw.mockResolvedValue([
+        nearbyFacility(),
+        nearbyFacility({
+          id: 'facility-2',
+          facilityId: 'FAC-2',
+          facilityName: 'Mainland Clinic',
+          distanceKm: '3.12',
+        }),
+      ]);
+
+      const result = await service.findNearby({
+        latitude: '6.5244',
+        longitude: '3.3792',
+        pageSize: '1',
+      });
+      const cursor = JSON.parse(
+        Buffer.from(result.next as string, 'base64url').toString('utf8'),
+      ) as { distanceKm: number; facilityName: string; id: string };
+
+      expect(result.facilities).toHaveLength(1);
+      expect(result.next).toEqual(expect.any(String));
+      expect(cursor).toEqual({
+        distanceKm: 2.41,
+        facilityName: 'Lagos General Hospital',
+        id: 'facility-1',
+      });
+      expect(result.count).toBe(1);
+    });
+
+    it('rejects invalid nearby cursors', async () => {
+      await expect(
+        service.findNearby({
+          latitude: '6.5244',
+          longitude: '3.3792',
+          next: 'not-a-valid-cursor',
+        }),
+      ).rejects.toThrow('next cursor is invalid');
+
+      expect(prisma.$queryRaw).not.toHaveBeenCalled();
     });
 
     it('rejects coordinates outside valid ranges', async () => {

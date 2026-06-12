@@ -187,6 +187,7 @@ Climap Backend is a **NestJS-powered RESTful API** for healthcare facility data.
 | `longitude`    | number | User longitude, from -180 to 180                 | `?longitude=3.3792`      |
 | `radiusKm`     | number | Search radius in kilometers, default 10, max 100 | `?radiusKm=10`           |
 | `pageSize`     | number | Number of nearest results, default 10, max 50    | `?pageSize=20`           |
+| `next`         | string | Cursor for the next nearest results page         | `?next=eyJka...`         |
 | `facilityType` | string | Optional facility type filter                    | `?facilityType=Hospital` |
 | `ownership`    | string | Optional ownership filter                        | `?ownership=Public`      |
 | `state`        | string | Optional state filter                            | `?state=Lagos`           |
@@ -267,6 +268,9 @@ GET {{baseUrl}}/api/v1/facilities/nearby?latitude=6.5244&longitude=3.3792&radius
 
 # Paginated request (use 'next' from previous response)
 GET {{baseUrl}}/api/v1/facilities?next=FACILITY_ID&pageSize=10
+
+# Paginated nearby request (keep the same location/filter params)
+GET {{baseUrl}}/api/v1/facilities/nearby?latitude=6.5244&longitude=3.3792&radiusKm=10&pageSize=20&next=NEARBY_CURSOR
 ```
 
 ---
